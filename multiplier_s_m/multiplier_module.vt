@@ -1,0 +1,113 @@
+`timescale 1ps/1ps
+module multiplier_module_simulation();
+
+	reg CLK;
+	reg RSTn;
+	
+	reg Start_Sig;
+	reg [7:0] Multiplicand;
+	reg [7:0] Multiplier;
+	
+	wire Done_Sig;
+	wire [15:0] Product;
+	
+	/****************************/
+	
+	initial
+	begin
+		RSTn = 0;
+		#10;
+		RSTn = 1;
+		CLK = 1;
+		forever #10 CLK = ~CLK;
+	end
+	
+	/****************************/
+	
+	multiplier_module U1
+	(
+		.CLK(CLK),
+		.RSTn(RSTn),
+		.Start_Sig(Start_Sig),
+		.Multiplicand(Multiplicand),
+		.Multiplier(Multiplier),
+		.Done_Sig(Done_Sig),
+		.Product(Product)
+	);
+	
+	/****************************/
+	
+	reg [3:0] i;
+	
+	always @ (posedge CLK or negedge RSTn)
+		if (!RSTn)
+		begin
+			i <= 4'd0;
+			Start_Sig <= 1'b0;
+			Multiplicand <= 8'd0;
+			Multiplier <= 8'D0;
+		end
+		else
+		case(i)
+			0:
+				if(Done_Sig)
+				begin
+					Start_Sig <= 1'b0;
+					i <= i + 1'b1;
+				end
+				else
+				begin
+					Multiplicand <= 8'd10;
+					Multiplier <= 8'd2;
+					Start_Sig <= 1'b1;
+				end
+				
+			1:
+				if(Done_Sig)
+				begin
+					Start_Sig <= 1'b0;
+					i <= i + 1'b1;
+				end
+				else
+				begin
+					Multiplicand <= 8'd2;
+					Multiplier <= 8'd10;
+					Start_Sig <= 1'b1;
+				end
+				
+			2:
+				if(Done_Sig)
+				begin
+					Start_Sig <= 1'b0;
+					i <= i + 1'b1;
+				end
+				else
+				begin
+					Multiplicand <= 8'd11;
+					Multiplier <= 8'b1111_1011;
+					Start_Sig <= 1'b1;
+				end
+				
+			3:
+				if(Done_Sig)
+				begin
+					Start_Sig <= 1'b0;
+					i <= i + 1'b1;
+				end
+				else
+				begin
+					Multiplicand <= 8'b1111_1011;
+					Multiplier <= 8'b1111_0101;
+					Start_Sig <= 1'b1;
+				end
+				
+			4:
+				begin
+				i <= 4'd4;
+				end
+				
+		endcase
+		
+	/****************************/
+	
+endmodule
